@@ -5,6 +5,7 @@ const socketIO = require("socket.io");
 
 // Utility
 const genMessage = require("./utils/message");
+const genLocationMessage = require("./utils/locationMessage");
 
 const publicPath = path.join(__dirname, "../public");
 const port = process.env.PORT || 3000;
@@ -27,11 +28,13 @@ io.on("connection", socket => {
 
     io.emit("newMessage", genMessage(message.from, message.text));
     callback("This is from the server");
-    // socket.broadcast.emit("newMessage", {
-    //   from: message.from,
-    //   text: message.text,
-    //   createdAt: new Date().getTime()
-    // });
+  });
+
+  socket.on("createLocationMessage", position => {
+    io.emit(
+      "newLocationMessage",
+      genLocationMessage("Admin", position.latitude, position.longitude)
+    );
   });
 
   socket.on("disconnect", () => {
